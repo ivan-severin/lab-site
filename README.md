@@ -28,5 +28,5 @@ $ pip install -r Requirements.txt
 
 ### Starting local server
 ```sh
-python app.py
+$ python app.py
 ```
