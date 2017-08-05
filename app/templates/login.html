@@ -1,0 +1,80 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{#{% block content %}#}
+{#    <div class="page-header">#}
+{#    <h1>Please login</h1>#}
+{#    </div>#}
+{##}
+{#        <br>#}
+{#        <form action="" method="post" name="login">#}
+{#            <p>#}
+{#                Enter RFID number#}
+{#                {{ form.username(size=80) }}<br>#}
+{#                Enter your password#}
+{#                {{ form.password(size=80) }}<br>#}
+{#                {% for error in form.errors.openid %}#}
+{#                <span style="color: red;">[{{error}}]</span>#}
+{#        {% endfor %}<br>#}
+{#                Remember me : {{ form.remember_me }}#}
+{#            </p>#}
+{##}
+{#      </form>#}
+{#      {% if error %}#}
+{#        <p class="error"><strong>Error:</strong> {{ error }}#}
+{#      {% endif %}#}
+{#        </p>#}
+{##}
+{#{% endblock %}#}
+{% block content %}
+
+  <div class="form-signin" >
+    <h2 class="form-signin-heading">Sign in</h2>
+
+
+
+
+      <form action="" method="post" name="login">
+            <p>
+                Enter RFID number
+                {{ form.username(size=80) }}<br>
+                Enter your password
+                {{ form.password(size=80) }}<br>
+                {% for error in form.errors.openid %}
+                <span style="color: red;">[{{error}}]</span>
+        {% endfor %}<br>
+                Remember me : {{ form.remember_me }}
+            </p>
+
+      </form>
+
+{#      <form action="" method="POST" role="form">#}
+{##}
+{#        <div class="form-group">#}
+{#          <label for="rfid_id" class="sr-only"> RFID number: </label>#}
+{#          <input type="text" id="rfid_id"  class="form-control" placeholder="Enter RFID number" required autofocus>#}
+{#         </div>#}
+{##}
+{#          <div class="form-group">#}
+{#          <label for="">Password:</label>#}
+{#            <label for="password" class="sr-only">Password</label>#}
+{#          <input type="password"  id="password" class="form-control" required="required" placeholder="Password">#}
+{#        </div>#}
+{##}
+{##}
+        <div class="checkbox">
+
+{##}
+{#      {% if name %}#}
+{#        <p class="error"><strong>Name:</strong> {{ name }}#}
+{#      {% endif %}#}
+
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+        </div>
+{#      </form>#}
+    </div>
+
+
+
+
+
+{% endblock %}
