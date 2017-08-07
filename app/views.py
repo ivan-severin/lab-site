@@ -1,12 +1,14 @@
-from app import app, request, object_list, Response, session, get_object_or_404
+from app import app, object_list, get_object_or_404
+from flask import  (abort, flash, Markup, redirect, render_template,
+                   request, Response, session, url_for )
 from app.models import Entry
 
 import functools
 
 
-# @app.route('/index')
-# def index():
-# 	return 'Hello World! :)'
+@app.route('/')
+def index():
+	return render_template('index.html')
 
 
 def login_required(fn):
@@ -43,14 +45,14 @@ def logout():
 
 
 
-@app.route('/')
-def index():
+@app.route('/news/')
+def news():
     search_query = request.args.get('q')
     if search_query:
         query = Entry.search(search_query)
     else:
         query = Entry.public().order_by(Entry.timestamp.desc())
-    return object_list('index.html', query, search=search_query)
+    return object_list('news.html', query, search=search_query)
 
 
 @app.route('/<slug>/')
