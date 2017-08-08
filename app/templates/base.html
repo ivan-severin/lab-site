@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Lab Site </title>
+    <title>{% block title %}Lab Site{% endblock %} </title>
 
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
@@ -106,14 +106,14 @@
             </ul>
           </div>
 
-        <div class="jumbotron">
+       <!--  <div class="jumbotron">
           <h2>
             Hello! I am Base block!
           </h2>
           <p>
           This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.
         </p>
-        </div>
+        </div> -->
         <div class="container-fluid">
         {% block page_header %}
         <div class="page-header">
