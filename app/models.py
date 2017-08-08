@@ -3,7 +3,7 @@ import datetime
 
 
 from playhouse.sqlite_ext import *
-class Basemodel
+
 
 class User(flask_db.Model):
     ''' the user model specifies its fields (or columns) declaratively, like django'''
@@ -17,7 +17,7 @@ class User(flask_db.Model):
 
 
 
-class Relationship(BaseModel):
+class Relationship(flask_db.Model):
     ''' this model contains two foreign keys to user -- it essentially allows us to
         model a "many-to-many" relationship between users.  by querying and joining
         on different columns we can expose who a user is "related to" and who is
@@ -32,7 +32,7 @@ class Relationship(BaseModel):
     #         (('from_user', 'to_user'), True),
     #     )
 
-class Message(BaseModel):
+class Message(flask_db.Model):
     ''' a dead simple one-to-many relationship: one user has 0..n messages, exposed by
         the foreign key.  because we didn't specify, a users messages will be accessible
         as a special attribute, User.message_set
