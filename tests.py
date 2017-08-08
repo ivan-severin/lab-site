@@ -8,7 +8,7 @@ class BasicTestCase(unittest.TestCase):
     def test_index(self):
         tester =  app.test_client(self)
         response = tester.get('/', content_type='thml/text')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
     
     def test_database(self):
         tester = os.path.exists('app.db')

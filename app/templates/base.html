@@ -34,12 +34,18 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li class="active">
-                <a href="#">Link</a>
+                <a href="#">News</a>
               </li>
               <li>
-                <a href="#">Link</a>
+                <a href="#">Publications</a>
               </li>
-              <li class="dropdown">
+              <li>
+                <a href="#">About us</a>
+              </li>
+              <li>
+                <a href="#">Contacts</a>
+              </li>
+              <!-- <li class="dropdown">
                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
                 <ul class="dropdown-menu">
                   <li>
@@ -62,7 +68,7 @@
                     <a href="#">One more separated link</a>
                   </li>
                 </ul>
-              </li>
+              </li> -->
             </ul>
             <form action="{{ url_for('index') }}" class="navbar-form navbar-left" id="search-form" method="get" role="search">
               <div class="form-group">
@@ -74,7 +80,7 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
 
-              {% if session.logged_in != True %}
+              {% if session.logged_in %}
               <li class="dropdown">
                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Profile<strong class="caret"></strong></a>
                 <ul class="dropdown-menu">
