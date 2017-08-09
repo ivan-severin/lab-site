@@ -1,4 +1,4 @@
-from app import app, object_list, get_object_or_404
+from app import app, object_list, get_object_or_404, database
 from flask import  (abort, flash, Markup, redirect, render_template,
                    request, Response, session, url_for )
 from app.models import Entry
@@ -10,6 +10,17 @@ import functools
 def index():
 	return render_template('index.html')
 
+@app.route('/publications/')
+def publications():
+    return render_template('publications.html')
+
+@app.route('/about/')
+def about():
+    return render_template('about.html')
+
+@app.route('/contacts/')
+def contacts():
+    return render_template('contacts.html')
 
 def login_required(fn):
     @functools.wraps(fn)
@@ -19,11 +30,26 @@ def login_required(fn):
         return redirect(url_for('login', next=request.path))
     return inner
 
+
+
+
+
+@app.route('/news/')
+def news():
+    search_query = request.args.get('q')
+    if search_query:
+        query = Entry.search(search_query)
+    else:
+        query = Entry.public().order_by(Entry.timestamp.desc())
+    return object_list('news.html', query, search=search_query)
+
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     next_url = request.args.get('next') or request.form.get('next')
     if request.method == 'POST' and request.form.get('password'):
         password = request.form.get('password')
+        # TODO: If using a one-way hash, you would also hash the user-submitted
+        # password and do the comparison on the hashed versions.
         if password == app.config['ADMIN_PASSWORD']:
             session['logged_in'] = True
             session.permanent = True  # Use cookie to store session.
@@ -42,18 +68,40 @@ def logout():
 
 
 
+def _create_or_edit(entry, template):
+    if request.method == 'POST':
+        entry.title = request.form.get('title') or ''
+        entry.content = request.form.get('content') or ''
+        entry.published = request.form.get('published') or False
+        if not (entry.title and entry.content):
+            flash('Title and Content are required.', 'danger')
+        else:
+            # Wrap the call to save in a transaction so we can roll it back
+            # cleanly in the event of an integrity error.
+            try:
+                with database.atomic():
+                    entry.save()
+            except IntegrityError:
+                flash('Error: this title is already in use.', 'danger')
+            else:
+                flash('Entry saved successfully.', 'success')
+                if entry.published:
+                    return redirect(url_for('detail', slug=entry.slug))
+                else:
+                    return redirect(url_for('edit', slug=entry.slug))
 
+    return render_template(template, entry=entry)
 
+@app.route('/create/', methods=['GET', 'POST'])
+@login_required
+def create():
+    return _create_or_edit(Entry(title='', content=''), 'create.html')
 
-@app.route('/news/')
-def news():
-    search_query = request.args.get('q')
-    if search_query:
-        query = Entry.search(search_query)
-    else:
-        query = Entry.public().order_by(Entry.timestamp.desc())
-    return object_list('news.html', query, search=search_query)
-
+@app.route('/drafts/')
+@login_required
+def drafts():
+    query = Entry.drafts().order_by(Entry.timestamp.desc())
+    return object_list('index.html', query, check_bounds=False)
 
 @app.route('/<slug>/')
 def detail(slug):
@@ -64,66 +112,19 @@ def detail(slug):
     entry = get_object_or_404(query, Entry.slug == slug)
     return render_template('detail.html', entry=entry)
 
-
-@property
-def html_content(self):
-    hilite = CodeHiliteExtension(linenums=False, css_class='highlight')
-    extras = ExtraExtension()
-    markdown_content = markdown(self.content, extensions=[hilite, extras])
-    oembed_content = parse_html(
-        markdown_content,
-        oembed_providers,
-        urlize_all=True,
-        maxwidth=app.config['SITE_WIDTH'])
-    return Markup(oembed_content)
-
-
-
-@app.route('/create/', methods=['GET', 'POST'])
-@login_required
-def create():
-    if request.method == 'POST':
-        if request.form.get('title') and request.form.get('content'):
-            entry = Entry.create(
-                title=request.form['title'],
-                content=request.form['content'],
-                published=request.form.get('published') or False)
-            flash('Entry created successfully.', 'success')
-            if entry.published:
-                return redirect(url_for('detail', slug=entry.slug))
-            else:
-                return redirect(url_for('edit', slug=entry.slug))
-        else:
-            flash('Title and Content are required.', 'danger')
-    return render_template('create.html')
-
-
 @app.route('/<slug>/edit/', methods=['GET', 'POST'])
 @login_required
 def edit(slug):
     entry = get_object_or_404(Entry, Entry.slug == slug)
-    if request.method == 'POST':
-        if request.form.get('title') and request.form.get('content'):
-            entry.title = request.form['title']
-            entry.content = request.form['content']
-            entry.published = request.form.get('published') or False
-            entry.save()
-
-            flash('Entry saved successfully.', 'success')
-            if entry.published:
-                return redirect(url_for('detail', slug=entry.slug))
-            else:
-                return redirect(url_for('edit', slug=entry.slug))
-        else:
-            flash('Title and Content are required.', 'danger')
-
-    return render_template('edit.html', entry=entry)
-
-
-
+    return _create_or_edit(entry, 'edit.html')
 
 @app.template_filter('clean_querystring')
 def clean_querystring(request_args, *keys_to_remove, **new_values):
+    # We'll use this template filter in the pagination include. This filter
+    # will take the current URL and allow us to preserve the arguments in the
+    # querystring while replacing any that we need to overwrite. For instance
+    # if your URL is /?q=search+query&page=2 and we want to preserve the search
+    # term but make a link to page 3, this filter will allow us to do that.
     querystring = dict((key, value) for key, value in request_args.items())
     for key in keys_to_remove:
         querystring.pop(key, None)

@@ -12,37 +12,37 @@ class User(flask_db.Model):
     email = CharField()
     join_date = DateTimeField()
 
-    class Meta:
-        order_by = ('username',)
-
-
-
-class Relationship(flask_db.Model):
-    ''' this model contains two foreign keys to user -- it essentially allows us to
-        model a "many-to-many" relationship between users.  by querying and joining
-        on different columns we can expose who a user is "related to" and who is
-        "related to" a given user 
-    '''
-    from_user = ForeignKeyField(User, related_name='relationships')
-    to_user = ForeignKeyField(User, related_name='related_to')
-
     # class Meta:
-    #     indexes = (
-    #         # Specify a unique multi-column index on from/to-user.
-    #         (('from_user', 'to_user'), True),
-    #     )
+    #     order_by = ('username',)
 
-class Message(flask_db.Model):
-    ''' a dead simple one-to-many relationship: one user has 0..n messages, exposed by
-        the foreign key.  because we didn't specify, a users messages will be accessible
-        as a special attribute, User.message_set
-    '''
-    user = ForeignKeyField(User)
-    content = TextField()
-    pub_date = DateTimeField()
 
-    # class Meta:
-    #     order_by = ('-pub_date',)
+
+# class Relationship(flask_db.Model):
+#     ''' this model contains two foreign keys to user -- it essentially allows us to
+#         model a "many-to-many" relationship between users.  by querying and joining
+#         on different columns we can expose who a user is "related to" and who is
+#         "related to" a given user 
+#     '''
+#     from_user = ForeignKeyField(User, related_name='relationships')
+#     to_user = ForeignKeyField(User, related_name='related_to')
+
+#     # class Meta:
+#     #     indexes = (
+#     #         # Specify a unique multi-column index on from/to-user.
+#     #         (('from_user', 'to_user'), True),
+#     #     )
+
+# class Message(flask_db.Model):
+#     ''' a dead simple one-to-many relationship: one user has 0..n messages, exposed by
+#         the foreign key.  because we didn't specify, a users messages will be accessible
+#         as a special attribute, User.message_set
+#     '''
+#     user = ForeignKeyField(User)
+#     content = TextField()
+#     pub_date = DateTimeField()
+
+#     # class Meta:
+#     #     order_by = ('-pub_date',)
 
 class Entry(flask_db.Model):
     title = CharField()

@@ -4,11 +4,32 @@ import unittest
 import os
 
 class BasicTestCase(unittest.TestCase):
-    """Basic tests"""
+    """Basic Ping tests"""
     def test_index(self):
         tester =  app.test_client(self)
         response = tester.get('/', content_type='thml/text')
         self.assertEqual(response.status_code, 200)
+
+    def test_news(self):
+        tester =  app.test_client(self)
+        response = tester.get('/news/', content_type='thml/text')
+        self.assertEqual(response.status_code, 200)
+
+    def test_publications(self):
+        tester =  app.test_client(self)
+        response = tester.get('/publications/', content_type='thml/text')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_contacts(self):
+        tester =  app.test_client(self)
+        response = tester.get('/contacts/', content_type='thml/text')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_about(self):
+        tester =  app.test_client(self)
+        response = tester.get('/about/', content_type='thml/text')
+        self.assertEqual(response.status_code, 200)
+    
     
     def test_database(self):
         tester = os.path.exists('app.db')
