@@ -18,4 +18,8 @@ app.config.from_object('config')
 flask_db = FlaskDB(app)
 database = flask_db.database
 oembed_providers = bootstrap_basic(OEmbedCache())
+
+
+
+
 from app import views, models
