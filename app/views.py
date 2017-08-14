@@ -1,7 +1,8 @@
 from app import app, object_list, get_object_or_404, database
 from flask import  (abort, flash, Markup, redirect, render_template,
                    request, Response, session, url_for )
-from app.models import Entry
+from app.models import Entry, User, datetime
+from hashlib import md5
 
 import functools
 
@@ -31,6 +32,45 @@ def login_required(fn):
     return inner
 
 
+# flask provides a "session" object, which allows us to store information across
+# requests (stored by default in a secure cookie).  this function allows us to
+# mark a user as being logged-in by setting some values in the session data:
+def auth_user(user):
+    session['logged_in'] = True
+    session['user_id'] = user.id
+    session['username'] = user.username
+    flash('You are logged in as %s' % (user.username))
+
+# get the user from the session
+def get_current_user():
+    if session.get('logged_in'):
+        return User.get(User.id == session['user_id'])
+
+
+
+
+@app.route('/join/', methods=['GET', 'POST'])
+def join():
+    if request.method == 'POST' and request.form['username']:
+        try:
+            with database.transaction():
+                # Attempt to create the user. If the username is taken, due to the
+                # unique constraint, the database will raise an IntegrityError.
+                user = User.create(
+                    username=request.form['username'],
+                    password=md5((request.form['password']).encode('utf-8')).hexdigest(),
+                    email=request.form['email'],
+                    join_date=datetime.datetime.now())
+
+            # mark the user as being 'authenticated' by setting the session vars
+            auth_user(user)
+            return redirect(url_for('index'))
+
+        # except IntegrityError:
+        except Exception as e:
+            flash(str(e))
+
+    return render_template('join.html')
 
 
 

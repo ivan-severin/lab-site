@@ -6,10 +6,8 @@ from playhouse.sqlite_ext import *
 
 
 
-
-
 class User(flask_db.Model):
-    ''' the user model specifies its fields (or columns) declaratively, like django'''
+    """ the user model specifies its fields (or columns) declaratively, like django"""
     username = CharField(unique=True)
     password = CharField()
     email = CharField()
@@ -30,21 +28,31 @@ class User(flask_db.Model):
                 .select()
                 .join(Relationship, on=Relationship.from_user)
                 .where(Relationship.to_user == self))
-    def create(self):
-        try:
-            with database.transaction():
-                # Attempt to create the user. If the username is taken, due to the
-                # unique constraint, the database will raise an IntegrityError. 
-                user = User
+    def is_following(self, user):
+        return Relationship.select().where(
+            (Relationship.from_user == self) &
+            (Relationship.to_user == user)
+        ).count() > 0
+
+    def gravatar_url(self, size=80):
+        return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
+            (md5(self.email.strip().lower().encode('utf-8')).hexdigest(), size)
+
+    # def create(self):
+    #     try:
+    #         with database.transaction():
+    #             # Attempt to create the user. If the username is taken, due to the
+    #             # unique constraint, the database will raise an IntegrityError. 
+    #             user = User
 
 
 
 class Relationship(flask_db.Model):
-    ''' this model contains two foreign keys to user -- it essentially allows us to
+    """ this model contains two foreign keys to user -- it essentially allows us to
         model a "many-to-many" relationship between users.  by querying and joining
         on different columns we can expose who a user is "related to" and who is
-        "related to" a given user 
-    '''
+        "related to" a given user
+    """
     from_user = ForeignKeyField(User, related_name='relationships')
     to_user = ForeignKeyField(User, related_name='related_to')
 
@@ -55,10 +63,10 @@ class Relationship(flask_db.Model):
         )
 
 class Message(flask_db.Model):
-    ''' a dead simple one-to-many relationship: one user has 0..n messages, exposed by
+    """ a dead simple one-to-many relationship: one user has 0..n messages, exposed by
         the foreign key.  because we didn't specify, a users messages will be accessible
         as a special attribute, User.message_set
-    '''
+    """
     user = ForeignKeyField(User)
     content = TextField()
     pub_date = DateTimeField()
