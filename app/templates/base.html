@@ -28,22 +28,26 @@
              
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-            </button> <a class="navbar-brand" href="{{ url_for('index') }}">PROJECT</a>
+            </button> <a class="navbar-brand" href="{{ url_for('index') }}">MSCA-RISE</a>
           </div>
           
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+
+
+
             <ul class="nav navbar-nav">
-              <li class="active">
-                <a href="{{ url_for('news') }}">News</a>
+              <li >
+                <a id="news" href="{{ url_for('news') }}">News</a>
               </li>
               <li>
-                <a href="{{ url_for('publications') }}">Publications</a>
+                <a id="publications" href="{{ url_for('publications') }}">Publications</a>
               </li>
               <li>
-                <a href="{{ url_for('about') }}">About us</a>
+                <a id="about"  href="{{ url_for('about') }}">About us</a>
               </li>
               <li>
-                <a href="{{ url_for('contacts') }}">Contacts</a>
+                <a id="contacts" href="{{ url_for('contacts') }}">Contacts</a>
               </li>
               <!-- <li class="dropdown">
                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
@@ -104,7 +108,7 @@
 
               <li>
               
-                <a href="{{ url_for('login') }}">Log in</a>
+                <a id="login" href="{{ url_for('login') }}">Log in</a>
                 
               </li>
               {% endif %}
@@ -140,3 +144,9 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     {% block extra_scripts %}{% endblock %}
   </body>
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#{{ request.endpoint }}").parent().addClass("active");
+    })
+  </script>
