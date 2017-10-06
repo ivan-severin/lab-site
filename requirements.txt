@@ -1,7 +1,7 @@
 flask 
-peewee 
-pygments 
-markdown 
-micawber 
-BeautifulSoup
+flask_sqlalchemy
+flask_security
+flask_mail
+flask_bcrypt
+playhouse
 gunicorn
